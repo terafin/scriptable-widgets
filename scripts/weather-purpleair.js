@@ -51,15 +51,23 @@ async function run() {
 		// Location
 		utilities_listwidget.addText(wg, data.loc, new Color(level.textColor), Font.mediumSystemFont(12))
 
+		let tempHumStack = wg.addStack()
+
 		// Temp
 		switch (units) {
 			case 'c':
-				utilities_listwidget.addText(wg, data.temp_c + '°C', new Color(level.textColor), Font.semiboldRoundedSystemFont(20))
+				utilities_listwidget.addText(tempHumStack, data.temp_c + '℃', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
+				utilities_listwidget.addSpacer(tempHumStack, 10)
 				break
 			default:
-				utilities_listwidget.addText(wg, data.temp_f + '°F', new Color(level.textColor), Font.semiboldRoundedSystemFont(20))
+				utilities_listwidget.addText(tempHumStack, data.temp_f + '℉', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
+				utilities_listwidget.addSpacer(tempHumStack, 17)
 				break
 		}
+		
+		// Humidity
+		utilities_listwidget.addText(tempHumStack, '💧' + data.hum + '%', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
+		
 		utilities_listwidget.addSpacer(wg, 10)
 		
 		// AQI Prefix
