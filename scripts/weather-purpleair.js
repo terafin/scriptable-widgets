@@ -22,7 +22,6 @@ let WIDGET_PARAMETER = args.widgetParameter || 'station:36991,units:c'
 
 async function run() {   
 	let wg = new ListWidget()
-	wg.setPadding(20,15,10,10)
 	
 	try {
 
@@ -30,7 +29,17 @@ async function run() {
 		const parameters = utilities.parseWidgetParameter(WIDGET_PARAMETER)
 		const sensor_id = parameters.station
 		const units = parameters.units
+		const size = parameters.size
 		// end parse parameters
+
+		switch (size) {
+			case 'iPadSmall':
+				wg.setPadding(20,10,10,10)
+				break
+			default:
+				wg.setPadding(20,15,10,10)
+				break
+		}
 
 		console.log(`Using sensor ID: ${sensor_id}`)
 		
@@ -51,22 +60,29 @@ async function run() {
 		// Location
 		utilities_listwidget.addText(wg, data.loc, new Color(level.textColor), Font.mediumSystemFont(12))
 
-		let tempHumStack = wg.addStack()
+		let stack = wg.addStack()
 
 		// Temp
 		switch (units) {
 			case 'c':
-				utilities_listwidget.addText(tempHumStack, data.temp_c + '℃', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
-				utilities_listwidget.addSpacer(tempHumStack, 10)
+				utilities_listwidget.addText(stack, data.temp_c + '℃', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
+				utilities_listwidget.addSpacer(stack, 10)
 				break
 			default:
-				utilities_listwidget.addText(tempHumStack, data.temp_f + '℉', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
-				utilities_listwidget.addSpacer(tempHumStack, 17)
+				utilities_listwidget.addText(stack, data.temp_f + '℉', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
+				switch (size) {
+					case 'iPadSmall':
+						utilities_listwidget.addSpacer(stack, 13)
+						break
+					default:
+						utilities_listwidget.addSpacer(stack, 21)
+						break
+				}
 				break
 		}
 		
 		// Humidity
-		utilities_listwidget.addText(tempHumStack, '💧' + data.hum + '%', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
+		utilities_listwidget.addText(stack, '💧' + data.hum + '%', new Color(level.textColor), Font.semiboldRoundedSystemFont(18))
 		
 		utilities_listwidget.addSpacer(wg, 10)
 		
