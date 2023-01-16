@@ -1,3 +1,6 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: pink; icon-glyph: magic;
 /**
  * Modified by Andrew Wadycki & Justin Wood
  * This widget is based from <https://github.com/jasonsnell/PurpleAir-AQI-Scriptable-Widget>
@@ -41,6 +44,16 @@ function getCachedData(fileName) {
   return JSON.parse(contents);
 }
 
+function clearCachedData(fileName) {
+  const fileManager = FileManager.local();
+  const cacheDirectory = fileManager.joinPath(fileManager.libraryDirectory(), "terafin-aqi");
+  const cacheFile = fileManager.joinPath(cacheDirectory, fileName);
+
+  if (fileManager.fileExists(cacheFile)) {
+	  fileManager.remove(cacheFile);
+  }
+}
+
 /**
  * Wite JSON to a local file
  *
@@ -67,17 +80,23 @@ async function _getSensorData(id) {
 	req.headers = {"X-API-Key": API_KEY} ;
 	
 	let json = undefined;
-	if(getCachedData(sensorCache)) {
-		const { json: cachedJson, updatedAt } = getCachedData(sensorCache);
-		console.error('got cached data')
-		json = cachedJson;
-		console.error(`cachedJason: ${json}`)
-		if (Date.now() - updatedAt > 15 * 60 * 1000) {
-			// Refresh if our data is 15 minutes or older
-			json = undefined;
-		} else {
-			console.log(`Using cached sensor data: ${updatedAt}`);
+	try {
+		if(getCachedData(sensorCache)) {
+			const { json: cachedJson, updatedAt } = getCachedData(sensorCache);
+			console.error('got cached data')
+			json = cachedJson;
+			console.error(`cachedJason: ${json}`)
+			if (Date.now() - updatedAt > 15 * 60 * 1000) {
+				// Refresh if our data is 15 minutes or older
+				json = undefined;
+			} else {
+				console.log(`Using cached sensor data: ${updatedAt}`);
+			}
 		}
+	} catch(ex) {
+		console.log(ex);
+		clearCachedData(sensorCache);
+		json = undefined;
 	}
 	
 	if(!json){
